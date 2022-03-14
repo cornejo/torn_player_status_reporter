@@ -24,5 +24,5 @@ The script is now installed
 
 # BUGS
 
-- GM_xmlhttpRequest seems to fail randomly. It may be cache related, or it might be related to browser restrictions. Disabling "Shields" on Brave seems to have fixed it (?)
+- GM_xmlhttpRequest seems to fail randomly. It may be cache related, or it might be related to browser restrictions. Discovered while using Brave with other extensions like umatrix and ublock origin.
 
