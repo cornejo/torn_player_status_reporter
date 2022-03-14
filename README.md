@@ -18,7 +18,7 @@ This script relies on there being enough users to monitor the targeted people - 
 
 With your web browser, install the TamperMonkey extension (or equivalent - eg GreaseMonkey)
 
-Browse to: TODO
+Browse to: https://github.com/cornejo/torn_player_status_reporter/raw/master/player_status_reporter.user.js
 
 The script is now installed
 
