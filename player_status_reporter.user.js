@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Player Status Reporter
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      0.2
 // @description  Reports current player state to a central server
 // @author       rDacted[2670953]
 // @match        https://www.torn.com/profiles.php*
@@ -12,13 +12,36 @@
 
 let server = "https://torn.rocks/api/player_state";
 
+function get_player_name() {
+    const arrAll = document.getElementsByTagName("script");
+    for(const entry of arrAll)
+    {
+        if(entry.hasAttribute('uid') && entry.hasAttribute("name")) {
+            let uid = entry.getAttribute('uid');
+            let name = entry.getAttribute('name');
+            return {"name": name, "uid": uid};
+            //return "" + name + "[" + uid + "]";
+        }
+    }
+    console.log("Could not determine name");
+}
+
 function report(player_id, status, desc) {
     console.log("Player " + player_id + " has status " + status);
+
+    let current_player = get_player_name();
+    let source_player = "?";
+    if(current_player != null) {
+        source_player = "" + current_player.name + "[" + current_player.uid + "]";
+    }
+
     let data = JSON.stringify({
         "player_id": player_id,
         "status": status,
         "desc": desc,
+        "source_player": source_player,
     });
+
     // console.log(data);
     let r = GM_xmlhttpRequest({
         method: "POST",
@@ -103,4 +126,3 @@ function start_observer() {
 
     start_observer();
 })();
-
