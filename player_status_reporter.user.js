@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Player Status Reporter
 // @namespace    http://tampermonkey.net/
-// @version      0.2
+// @version      0.3
 // @description  Reports current player state to a central server
 // @author       rDacted[2670953]
 // @match        https://www.torn.com/profiles.php*
@@ -75,7 +75,7 @@ function get_description(target) {
 function set_player_state(player_id, target) {
     let desc = get_description(target);
     let classes = target.classList;
-    let options = ["hospital", "okay", "jail", "travelling"];
+    let options = ["hospital", "okay", "jail", "travelling", "abroad"];
     let found = false;
     for(const status of options) {
         if(classes.contains(status)) {
