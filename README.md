@@ -2,7 +2,7 @@
 
 This script reports the state of any player you are actively looking at to rDacted's server.
 
-It's a Torn-legal way of obtaining the current state of any player without spamming the torn servers.
+It's a Torn-legal way of obtaining the current state of any player without spamming the torn servers with api queries.
 
 Here's how it works:
 
@@ -16,11 +16,9 @@ This script relies on there being enough users to monitor the targeted people - 
 
 # Installation
 
-With your web browser, install the TamperMonkey extension (or equivalent - eg GreaseMonkey)
+With your web browser, install the ViolentMonkey extension (or equivalent - eg Tampermonkey, GreaseMonkey)
 
-Browse to: https://github.com/cornejo/torn_player_status_reporter/raw/master/player_status_reporter.user.js
-
-The script is now installed
+Install the script located at https://github.com/cornejo/torn_player_status_reporter/raw/master/player_status_reporter.user.js
 
 # BUGS
 
