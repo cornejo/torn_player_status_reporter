@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Player Status Reporter
 // @namespace    http://tampermonkey.net/
-// @version      0.3
+// @version      0.4
 // @description  Reports current player state to a central server
 // @author       rDacted[2670953]
 // @match        https://www.torn.com/profiles.php*
@@ -11,6 +11,36 @@
 // ==/UserScript==
 
 let server = "https://torn.rocks/api/player_state";
+
+var apikey = '###PDA-APIKEY###';
+let universalPost = null;
+if (apikey[0] != '#') {
+    console.log("Using TornPDA version");
+    universalPost = PDA_httpPost;
+} else {
+    console.log("Using GM_xmlhttpRequest version")
+    universalPost = function(url, headers, body) {
+        return new Promise(function(resolve, reject) {
+            GM_xmlhttpRequest({
+                method: "POST",
+                url: url,
+                headers: headers,
+                data: body,
+                onload: function(response) {
+                    if(response.status == 200) {
+                        resolve(response);
+                    } else {
+                        console.log(response.status);
+                        reject(Error(response));
+                    }
+                },
+                onabort: function(response) { console.log("onabort"); reject(Error(response)); },
+                onerror: function(response) { console.log("onerror"); reject(Error(response)); },
+                ontimeout: function(response) { console.log("ontimeout"); reject(Error(response)); },
+            });
+        });
+    };
+}
 
 function get_player_name() {
     const arrAll = document.getElementsByTagName("script");
@@ -35,6 +65,7 @@ function report(player_id, status, desc) {
         source_player = "" + current_player.name + "[" + current_player.uid + "]";
     }
 
+    let headers = {"Content-Type": "application/json"};
     let data = JSON.stringify({
         "player_id": player_id,
         "status": status,
@@ -42,25 +73,13 @@ function report(player_id, status, desc) {
         "source_player": source_player,
     });
 
-    // console.log(data);
-    let r = GM_xmlhttpRequest({
-        method: "POST",
-        url: server,
-        data: data,
-        nocache: true,
-        revalidate: true,
-        fetch: false,
-        headers: {
-            "Content-Type": "application/json",
+    universalPost(server, headers, data).then(
+    resolve => {
+            console.log("Success - report sent");
         },
-        onabort: function(response) { console.log("onabort " + response.responseText); },
-        onerror: function(response) { console.log("onerror"); },
-        onload: function(response) { console.log("onload " + response.responseText); },
-        // onprogress: function(response) { console.log("onprogress " + response.responseText); },
-        // onreadystatechange: function(response) { console.log("onreadystatechange " + response.responseText); },
-        ontimeout: function(response) { console.log("ontimeout " + response.responseText); },
-    });
-    console.log(r);
+        error => {
+            console.log("Failed to send report");
+        });
 }
 
 function get_description(target) {
@@ -101,7 +120,7 @@ function start_observer() {
 
             // Damnit. The player state starts off 'okay' regardless of their actual state
             // it then gets updated later - hence reporting it early is not worth it
-            // set_player_state(player_id, target);
+            set_player_state(player_id, target);
 
             // Create an observer instance
             let observer = new MutationObserver(function(mutations) {
@@ -121,8 +140,12 @@ function start_observer() {
     }
 }
 
-(function() {
-    'use strict';
-
+function start() {
+    console.log("Player status reporter starting");
     start_observer();
-})();
+    console.log("Player status reporter done");
+}
+
+// TODO
+// This delay is needed to let the screen settle
+setTimeout(function() { start(); }, 500);
